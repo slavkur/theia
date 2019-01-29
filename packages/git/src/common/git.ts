@@ -16,7 +16,7 @@
 
 import { ChildProcess } from 'child_process';
 import { Disposable } from '@theia/core';
-import { Repository, WorkingDirectoryStatus, Branch, GitResult, GitError, GitFileStatus, GitFileChange, CommitWithChanges, GitFileBlame } from './git-model';
+import { Repository, WorkingDirectoryStatus, Branch, GitResult, GitError, GitFileStatus, GitFileChange, CommitWithChanges, GitFileBlame, Remote } from './git-model';
 
 /**
  * The WS endpoint path to the Git service.
@@ -27,6 +27,11 @@ export const GitPath = '/services/git';
  * Git symbol for DI.
  */
 export const Git = Symbol('Git');
+
+/**
+ * Available Git remote actions.
+ */
+export type RemoteAction = 'fetch' | 'push';
 
 export namespace Git {
 
@@ -546,6 +551,18 @@ export namespace Git {
 
         }
 
+        /**
+         * Options for the `git remote` command.
+         */
+        export interface RemoteType {
+
+            /**
+             * Be more verbose and get remote url for `fetch` and `push` actions.
+             */
+            readonly verbose?: true,
+
+        }
+
     }
 
 }
@@ -691,11 +708,19 @@ export interface Git extends Disposable {
     show(repository: Repository, uri: string, options?: Git.Options.Show): Promise<string>;
 
     /**
-     * It resolves to an array of configured remotes for the given repository.
+     * It resolves to an array of configured remotes names for the given repository.
      *
-     * @param repository the repository to get the remotes.
+     * @param repository the repository to get the remote names.
      */
     remote(repository: Repository): Promise<string[]>;
+
+    /**
+     * It resolves to an array of configured remote objects for the given Git action.
+     *
+     * @param repository the repository to get the remote objects.
+     * @param type the git action either `fetch` or `push`.
+     */
+    remote(repository: Repository, options?: Git.Options.RemoteType): Promise<Remote[]>;
 
     /**
      * Executes the Git command and resolves to the result. If an executed Git command exits with a code that is not in the `successExitCodes` or an error not in `expectedErrors`,
