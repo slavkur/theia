@@ -33,7 +33,7 @@ export class CallHierarchyFeature extends TextDocumentFeature<TextDocumentRegist
     }
 
     fillClientCapabilities(capabilities: ClientCapabilities): void {
-        if (!!capabilities.textDocument) {
+        if (!capabilities.textDocument) {
             capabilities.textDocument = {};
         }
         const callsClientCapabilities = capabilities as CallHierarchyClientCapabilities;

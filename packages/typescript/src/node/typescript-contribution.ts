@@ -71,13 +71,6 @@ export class TypeScriptContribution extends BaseLanguageServerContribution {
         if (isRequestMessage(message)) {
             if (message.method === InitializeRequest.type.method) {
                 const initializeParams = message.params as TypeScriptInitializeParams;
-                const capabilities = initializeParams.capabilities;
-                if (capabilities.textDocument) {
-                    if (!capabilities.textDocument.documentSymbol) {
-                        capabilities.textDocument.documentSymbol = {};
-                    }
-                    capabilities.textDocument.documentSymbol.hierarchicalDocumentSymbolSupport = true;
-                }
                 if (this.plugins.length) {
                     const options: TypeScriptInitializationOptions = {
                         plugins: [],
