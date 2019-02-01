@@ -62,6 +62,7 @@ import { IJSONSchema, IJSONSchemaSnippet } from '@theia/core/lib/common/json-sch
 import { DebuggerDescription } from '@theia/debug/lib/common/debug-service';
 import { DebugProtocol } from 'vscode-debugprotocol';
 import { SymbolInformation } from 'vscode-languageserver-types';
+import { StatusBarCommand } from '@theia/scm/lib/common/scm';
 
 export interface PluginInitData {
     plugins: PluginMetadata[];
@@ -447,6 +448,26 @@ export interface NotificationExt {
         task: (progress: Progress<{ message?: string; increment?: number }>, token: CancellationToken) => PromiseLike<R>
     ): PromiseLike<R>;
     $onCancel(id: string): void;
+}
+
+export interface ScmExt {
+    createSourceControl(id: string, label: string, rootUri?: theia.Uri): theia.SourceControl
+}
+
+export interface ScmMain {
+    $registerSourceControl(handle: number, id: string, label: string, rootUri?: string): void
+    $updateSourceControl(handle: number, features: SCMProviderFeatures): void;
+    $unregisterSourceControl(handle: number): void;
+    $setInputBoxValue(sourceControlHandle: number, value: string): void;
+    $setInputBoxPlaceholder(sourceControlHandle: number, placeholder: string): void;
+}
+
+export interface SCMProviderFeatures {
+    hasQuickDiffProvider?: boolean;
+    count?: number;
+    commitTemplate?: string;
+    acceptInputCommand?: StatusBarCommand;
+    statusBarCommands?: StatusBarCommand[];
 }
 
 export interface NotificationMain {
@@ -1008,7 +1029,8 @@ export const PLUGIN_RPC_CONTEXT = {
     STORAGE_MAIN: createProxyIdentifier<StorageMain>('StorageMain'),
     TASKS_MAIN: createProxyIdentifier<TasksMain>('TasksMain'),
     LANGUAGES_CONTRIBUTION_MAIN: createProxyIdentifier<LanguagesContributionMain>('LanguagesContributionMain'),
-    DEBUG_MAIN: createProxyIdentifier<DebugMain>('DebugMain')
+    DEBUG_MAIN: createProxyIdentifier<DebugMain>('DebugMain'),
+    SCM_MAIN: createProxyIdentifier<ScmMain>('ScmMain')
 };
 
 export const MAIN_RPC_CONTEXT = {
@@ -1030,7 +1052,8 @@ export const MAIN_RPC_CONTEXT = {
     STORAGE_EXT: createProxyIdentifier<StorageExt>('StorageExt'),
     TASKS_EXT: createProxyIdentifier<TasksExt>('TasksExt'),
     LANGUAGES_CONTRIBUTION_EXT: createProxyIdentifier<LanguagesContributionExt>('LanguagesContributionExt'),
-    DEBUG_EXT: createProxyIdentifier<DebugExt>('DebugExt')
+    DEBUG_EXT: createProxyIdentifier<DebugExt>('DebugExt'),
+    SCM_EXT: createProxyIdentifier<ScmExt>('ScmExt')
 };
 
 export interface TasksExt {
